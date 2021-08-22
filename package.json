@@ -14,7 +14,7 @@
   "scripts": {
     "test": "jest --collectCoverage --testPathIgnorePatterns=memoization.spec.ts",
     "test-all": "jest",
-    "dev": "jest --watch",
+    "dev": "jest --watch --testPathIgnorePatterns=memoization.spec.ts",
     "build": "rm -rf dist && rollup --config ./rollup/build.config.js && yarn tsc:declaration",
     "prepare": "npm run build && npm run readme",
     "readme": "readme",

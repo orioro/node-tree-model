@@ -441,3 +441,43 @@ describe('model.commonAncestorPath(nodesById, nodeIds)', () => {
     ).toEqual(['root', 'root_0', 'root_0_1', 'root_0_1_1'])
   })
 })
+
+describe('model.commonAncestorId(nodesById, nodeIds)', () => {
+  const treeNodes = makeTreeNodes([
+    'root',
+    'root_0',
+    'root_0_0',
+    'root_0_1',
+    'root_0_1_0',
+    'root_0_1_1',
+    'root_0_1_1_0',
+    'root_0_1_1_1',
+    'root_0_1_1_1',
+    'root_0_1_1_3',
+    'root_0_1_1_3_0',
+    'root_0_1_1_3_0_0',
+    'root_0_1_1_3_0_1',
+    'root_0_1_1_3_1',
+    'root_0_2',
+    'root_0_3',
+    'root_1',
+  ])
+
+  test('root - when root is involved', () => {
+    expect(
+      model.commonAncestorId(treeNodes, ['root_0_0', 'root', 'root_1'])
+    ).toEqual(null)
+  })
+
+  test('root_0_1_1_3 and root_0_1_1_3_0_1 - One node is ancestor of the other', () => {
+    expect(
+      model.commonAncestorId(treeNodes, ['root_0_1_1_3', 'root_0_1_1_3_0_1'])
+    ).toEqual('root_0_1_1')
+  })
+
+  test('root_0_1_1_3_1 and root_0_1_1_0 - different branches', () => {
+    expect(
+      model.commonAncestorId(treeNodes, ['root_0_1_1_3_1', 'root_0_1_1_0'])
+    ).toEqual('root_0_1_1')
+  })
+})

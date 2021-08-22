@@ -13,6 +13,7 @@ import type {
   FnIsSiblingOf,
   FnCommonPath,
   FnCommonAncestorPath,
+  FnCommonAncestorId,
 } from './types'
 
 import * as util from './util'
@@ -188,3 +189,15 @@ export const commonAncestorPath: QueryProvider<FnCommonAncestorPath> =
             model.nodePath(nodesById, nodesById[nodeId].parentId as string)
           )
         )
+/**
+ * @function tree#commonAncestorId
+ * @param {TreeState} nodesById
+ * @param {NodeId[]} nodeIds
+ * @returns {NodeId | null}
+ */
+export const commonAncestorId: QueryProvider<FnCommonAncestorId> =
+  (model) => (nodesById, nodeIds) => {
+    const path = model.commonAncestorPath(nodesById, nodeIds)
+
+    return path.length > 0 ? path[path.length - 1] : null
+  }

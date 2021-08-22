@@ -67,6 +67,7 @@ export type TreeModel = {
   isSiblingOf: FnIsSiblingOf
   commonPath: FnCommonPath
   commonAncestorPath: FnCommonAncestorPath
+  commonAncestorId: FnCommonAncestorId
 
   [key: string]: TreeModelQueryFn
 }
@@ -117,3 +118,7 @@ export type FnCommonAncestorPath = (
   state: TreeState,
   nodeIds: NodeId[]
 ) => NodeId[]
+export type FnCommonAncestorId = (
+  state: TreeState,
+  nodeIds: NodeId[]
+) => NodeId | null
