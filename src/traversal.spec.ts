@@ -1,258 +1,261 @@
-import {
-  treeNodeIsRoot,
-  treeRootNodeId,
+import { treeModel } from './'
+import { makeTreeNodes } from '../test/trees'
 
-  treeNodeAncestorIds,
-  treeNodePath,
-  treeNodeIsAncestorOf,
-  treeNodeIsDescendantOf,
+const model = treeModel()
 
-  treeNodeChildNodeIds,
-
-  treeNodeSiblingIds,
-  treeNodeIsSiblingOf,
-
-  treeNodesCommonPath,
-  treeNodesCommonAncestorPath
-} from './traversal'
-
-import {
-  makeTreeNodes
-} from '../test/trees'
-
-describe('treeNodeIsRoot(nodesById, nodeId)', () => {
+describe('model.isRoot(nodesById, nodeId)', () => {
   const treeNodes = makeTreeNodes([
     'root',
     'root_0',
     'root_0_0',
     'root_0_1',
     ['root_0_1_0', { someData: 'some-value' }],
-    'root_1'
+    'root_1',
   ])
 
   test('root', () => {
-    expect(treeNodeIsRoot(treeNodes, 'root')).toEqual(true)
+    expect(model.isRoot(treeNodes, 'root')).toEqual(true)
   })
 
   test('branches and leaves', () => {
-    expect(treeNodeIsRoot(treeNodes, 'root_0')).toEqual(false)
-    expect(treeNodeIsRoot(treeNodes, 'root_0_0')).toEqual(false)
-    expect(treeNodeIsRoot(treeNodes, 'root_0_1')).toEqual(false)
-    expect(treeNodeIsRoot(treeNodes, 'root_0_1_0')).toEqual(false)
-    expect(treeNodeIsRoot(treeNodes, 'root_1')).toEqual(false)
+    expect(model.isRoot(treeNodes, 'root_0')).toEqual(false)
+    expect(model.isRoot(treeNodes, 'root_0_0')).toEqual(false)
+    expect(model.isRoot(treeNodes, 'root_0_1')).toEqual(false)
+    expect(model.isRoot(treeNodes, 'root_0_1_0')).toEqual(false)
+    expect(model.isRoot(treeNodes, 'root_1')).toEqual(false)
   })
 })
 
-describe('treeRootNodeId(nodesById)', () => {
+describe('model.rootNodeId(nodesById)', () => {
   const treeNodes = makeTreeNodes([
     'root',
     'root_0',
     'root_0_0',
     'root_0_1',
     ['root_0_1_0', { someData: 'some-value' }],
-    'root_1'
+    'root_1',
   ])
 
-  test('', () => {
-    expect(treeRootNodeId(treeNodes)).toEqual('root')
+  test('model.rootNodeId(nodesById)', () => {
+    expect(model.rootNodeId(treeNodes)).toEqual('root')
   })
 })
 
-describe('treeNodeAncestorIds(nodesById, nodeId)', () => {
+describe('model.ancestorIds(nodesById, nodeId)', () => {
   const treeNodes = makeTreeNodes([
     'root',
     'root_0',
     'root_0_0',
     'root_0_1',
     ['root_0_1_0', { someData: 'some-value' }],
-    'root_1'
-  ])
-
-  test('root', () => {
-    expect(treeNodeAncestorIds(treeNodes, 'root'))
-      .toEqual([])
-  })
-
-  test('root_0', () => {
-    expect(treeNodeAncestorIds(treeNodes, 'root_0'))
-      .toEqual(['root'])
-  })
-
-  test('root_0_1', () => {
-    expect(treeNodeAncestorIds(treeNodes, 'root_0_1'))
-      .toEqual(['root', 'root_0'])
-  })
-
-  test('root_0_1_0', () => {
-    expect(treeNodeAncestorIds(treeNodes, 'root_0_1_0'))
-      .toEqual(['root', 'root_0', 'root_0_1'])
-  })
-
-  test('root_1', () => {
-    expect(treeNodeAncestorIds(treeNodes, 'root_1'))
-      .toEqual(['root'])
-  })
-})
-
-describe('treeNodePath(nodesById, nodeId)', () => {
-  const treeNodes = makeTreeNodes([
-    'root',
-    'root_0',
-    'root_0_0',
-    'root_0_1',
-    ['root_0_1_0', { someData: 'some-value' }],
-    'root_1'
+    'root_1',
   ])
 
   test('root', () => {
-    expect(treeNodePath(treeNodes, 'root'))
-      .toEqual(['root'])
+    expect(model.ancestorIds(treeNodes, 'root')).toEqual([])
   })
 
   test('root_0', () => {
-    expect(treeNodePath(treeNodes, 'root_0'))
-      .toEqual(['root', 'root_0'])
+    expect(model.ancestorIds(treeNodes, 'root_0')).toEqual(['root'])
   })
 
   test('root_0_1', () => {
-    expect(treeNodePath(treeNodes, 'root_0_1'))
-      .toEqual(['root', 'root_0', 'root_0_1'])
+    expect(model.ancestorIds(treeNodes, 'root_0_1')).toEqual(['root', 'root_0'])
   })
 
   test('root_0_1_0', () => {
-    expect(treeNodePath(treeNodes, 'root_0_1_0'))
-      .toEqual(['root', 'root_0', 'root_0_1', 'root_0_1_0'])
+    expect(model.ancestorIds(treeNodes, 'root_0_1_0')).toEqual([
+      'root',
+      'root_0',
+      'root_0_1',
+    ])
   })
 
   test('root_1', () => {
-    expect(treeNodePath(treeNodes, 'root_1'))
-      .toEqual(['root', 'root_1'])
+    expect(model.ancestorIds(treeNodes, 'root_1')).toEqual(['root'])
   })
 })
 
-describe('treeNodeIsAncestorOf(nodesById, candidateAncestorId, candidateDescendantId)', () => {
+describe('model.nodePath(nodesById, nodeId)', () => {
   const treeNodes = makeTreeNodes([
     'root',
     'root_0',
     'root_0_0',
     'root_0_1',
     ['root_0_1_0', { someData: 'some-value' }],
-    'root_1'
+    'root_1',
+  ])
+
+  test('root', () => {
+    expect(model.nodePath(treeNodes, 'root')).toEqual(['root'])
+  })
+
+  test('root_0', () => {
+    expect(model.nodePath(treeNodes, 'root_0')).toEqual(['root', 'root_0'])
+  })
+
+  test('root_0_1', () => {
+    expect(model.nodePath(treeNodes, 'root_0_1')).toEqual([
+      'root',
+      'root_0',
+      'root_0_1',
+    ])
+  })
+
+  test('root_0_1_0', () => {
+    expect(model.nodePath(treeNodes, 'root_0_1_0')).toEqual([
+      'root',
+      'root_0',
+      'root_0_1',
+      'root_0_1_0',
+    ])
+  })
+
+  test('root_1', () => {
+    expect(model.nodePath(treeNodes, 'root_1')).toEqual(['root', 'root_1'])
+  })
+})
+
+describe('model.isAncestorOf(nodesById, candidateAncestorId, candidateDescendantId)', () => {
+  const treeNodes = makeTreeNodes([
+    'root',
+    'root_0',
+    'root_0_0',
+    'root_0_1',
+    ['root_0_1_0', { someData: 'some-value' }],
+    'root_1',
   ])
 
   test('root ancestor of any but self', () => {
-    expect(treeNodeIsAncestorOf(treeNodes, 'root', 'root')).toEqual(false)
-    expect(treeNodeIsAncestorOf(treeNodes, 'root', 'root_0')).toEqual(true)
-    expect(treeNodeIsAncestorOf(treeNodes, 'root', 'root_0_0')).toEqual(true)
-    expect(treeNodeIsAncestorOf(treeNodes, 'root', 'root_0_1')).toEqual(true)
-    expect(treeNodeIsAncestorOf(treeNodes, 'root', 'root_0_1_0')).toEqual(true)
-    expect(treeNodeIsAncestorOf(treeNodes, 'root', 'root_1')).toEqual(true)
+    expect(model.isAncestorOf(treeNodes, 'root', 'root')).toEqual(false)
+    expect(model.isAncestorOf(treeNodes, 'root', 'root_0')).toEqual(true)
+    expect(model.isAncestorOf(treeNodes, 'root', 'root_0_0')).toEqual(true)
+    expect(model.isAncestorOf(treeNodes, 'root', 'root_0_1')).toEqual(true)
+    expect(model.isAncestorOf(treeNodes, 'root', 'root_0_1_0')).toEqual(true)
+    expect(model.isAncestorOf(treeNodes, 'root', 'root_1')).toEqual(true)
   })
 
   test('root_0', () => {
-    expect(treeNodeIsAncestorOf(treeNodes, 'root_0', 'root')).toEqual(false)
-    expect(treeNodeIsAncestorOf(treeNodes, 'root_0', 'root_0')).toEqual(false)
-    expect(treeNodeIsAncestorOf(treeNodes, 'root_0', 'root_0_0')).toEqual(true)
-    expect(treeNodeIsAncestorOf(treeNodes, 'root_0', 'root_0_1')).toEqual(true)
-    expect(treeNodeIsAncestorOf(treeNodes, 'root_0', 'root_0_1_0')).toEqual(true)
-    expect(treeNodeIsAncestorOf(treeNodes, 'root_0', 'root_1')).toEqual(false)
+    expect(model.isAncestorOf(treeNodes, 'root_0', 'root')).toEqual(false)
+    expect(model.isAncestorOf(treeNodes, 'root_0', 'root_0')).toEqual(false)
+    expect(model.isAncestorOf(treeNodes, 'root_0', 'root_0_0')).toEqual(true)
+    expect(model.isAncestorOf(treeNodes, 'root_0', 'root_0_1')).toEqual(true)
+    expect(model.isAncestorOf(treeNodes, 'root_0', 'root_0_1_0')).toEqual(true)
+    expect(model.isAncestorOf(treeNodes, 'root_0', 'root_1')).toEqual(false)
   })
 
   test('root_0_0', () => {
-    expect(treeNodeIsAncestorOf(treeNodes, 'root_0_0', 'root')).toEqual(false)
-    expect(treeNodeIsAncestorOf(treeNodes, 'root_0_0', 'root_0')).toEqual(false)
-    expect(treeNodeIsAncestorOf(treeNodes, 'root_0_0', 'root_0_0')).toEqual(false)
-    expect(treeNodeIsAncestorOf(treeNodes, 'root_0_0', 'root_0_1')).toEqual(false)
-    expect(treeNodeIsAncestorOf(treeNodes, 'root_0_0', 'root_0_1_0')).toEqual(false)
-    expect(treeNodeIsAncestorOf(treeNodes, 'root_0_0', 'root_1')).toEqual(false)
+    expect(model.isAncestorOf(treeNodes, 'root_0_0', 'root')).toEqual(false)
+    expect(model.isAncestorOf(treeNodes, 'root_0_0', 'root_0')).toEqual(false)
+    expect(model.isAncestorOf(treeNodes, 'root_0_0', 'root_0_0')).toEqual(false)
+    expect(model.isAncestorOf(treeNodes, 'root_0_0', 'root_0_1')).toEqual(false)
+    expect(model.isAncestorOf(treeNodes, 'root_0_0', 'root_0_1_0')).toEqual(
+      false
+    )
+    expect(model.isAncestorOf(treeNodes, 'root_0_0', 'root_1')).toEqual(false)
   })
 
   test('root_0_1', () => {
-    expect(treeNodeIsAncestorOf(treeNodes, 'root_0_1', 'root')).toEqual(false)
-    expect(treeNodeIsAncestorOf(treeNodes, 'root_0_1', 'root_0')).toEqual(false)
-    expect(treeNodeIsAncestorOf(treeNodes, 'root_0_1', 'root_0_0')).toEqual(false)
-    expect(treeNodeIsAncestorOf(treeNodes, 'root_0_1', 'root_0_1')).toEqual(false)
-    expect(treeNodeIsAncestorOf(treeNodes, 'root_0_1', 'root_0_1_0')).toEqual(true)
-    expect(treeNodeIsAncestorOf(treeNodes, 'root_0_1', 'root_1')).toEqual(false)
+    expect(model.isAncestorOf(treeNodes, 'root_0_1', 'root')).toEqual(false)
+    expect(model.isAncestorOf(treeNodes, 'root_0_1', 'root_0')).toEqual(false)
+    expect(model.isAncestorOf(treeNodes, 'root_0_1', 'root_0_0')).toEqual(false)
+    expect(model.isAncestorOf(treeNodes, 'root_0_1', 'root_0_1')).toEqual(false)
+    expect(model.isAncestorOf(treeNodes, 'root_0_1', 'root_0_1_0')).toEqual(
+      true
+    )
+    expect(model.isAncestorOf(treeNodes, 'root_0_1', 'root_1')).toEqual(false)
   })
 })
 
-describe('treeNodeIsDescendantOf(nodesById, candidateAncestorId, candidateDescendantId)', () => {
+describe('model.isDescendantOf(nodesById, candidateAncestorId, candidateDescendantId)', () => {
   const treeNodes = makeTreeNodes([
     'root',
     'root_0',
     'root_0_0',
     'root_0_1',
     ['root_0_1_0', { someData: 'some-value' }],
-    'root_1'
+    'root_1',
   ])
 
   test('root', () => {
-    expect(treeNodeIsDescendantOf(treeNodes, 'root', 'root')).toEqual(false)
-    expect(treeNodeIsDescendantOf(treeNodes, 'root', 'root_0')).toEqual(false)
-    expect(treeNodeIsDescendantOf(treeNodes, 'root', 'root_0_0')).toEqual(false)
-    expect(treeNodeIsDescendantOf(treeNodes, 'root', 'root_0_1')).toEqual(false)
-    expect(treeNodeIsDescendantOf(treeNodes, 'root', 'root_0_1_0')).toEqual(false)
-    expect(treeNodeIsDescendantOf(treeNodes, 'root', 'root_1')).toEqual(false)
+    expect(model.isDescendantOf(treeNodes, 'root', 'root')).toEqual(false)
+    expect(model.isDescendantOf(treeNodes, 'root', 'root_0')).toEqual(false)
+    expect(model.isDescendantOf(treeNodes, 'root', 'root_0_0')).toEqual(false)
+    expect(model.isDescendantOf(treeNodes, 'root', 'root_0_1')).toEqual(false)
+    expect(model.isDescendantOf(treeNodes, 'root', 'root_0_1_0')).toEqual(false)
+    expect(model.isDescendantOf(treeNodes, 'root', 'root_1')).toEqual(false)
   })
 
   test('root_0', () => {
-    expect(treeNodeIsDescendantOf(treeNodes, 'root_0', 'root')).toEqual(true)
-    expect(treeNodeIsDescendantOf(treeNodes, 'root_0', 'root_0')).toEqual(false)
-    expect(treeNodeIsDescendantOf(treeNodes, 'root_0', 'root_0_0')).toEqual(false)
-    expect(treeNodeIsDescendantOf(treeNodes, 'root_0', 'root_0_1')).toEqual(false)
-    expect(treeNodeIsDescendantOf(treeNodes, 'root_0', 'root_0_1_0')).toEqual(false)
-    expect(treeNodeIsDescendantOf(treeNodes, 'root_0', 'root_1')).toEqual(false)
+    expect(model.isDescendantOf(treeNodes, 'root_0', 'root')).toEqual(true)
+    expect(model.isDescendantOf(treeNodes, 'root_0', 'root_0')).toEqual(false)
+    expect(model.isDescendantOf(treeNodes, 'root_0', 'root_0_0')).toEqual(false)
+    expect(model.isDescendantOf(treeNodes, 'root_0', 'root_0_1')).toEqual(false)
+    expect(model.isDescendantOf(treeNodes, 'root_0', 'root_0_1_0')).toEqual(
+      false
+    )
+    expect(model.isDescendantOf(treeNodes, 'root_0', 'root_1')).toEqual(false)
   })
 
   test('root_0_0', () => {
-    expect(treeNodeIsDescendantOf(treeNodes, 'root_0_0', 'root')).toEqual(true)
-    expect(treeNodeIsDescendantOf(treeNodes, 'root_0_0', 'root_0')).toEqual(true)
-    expect(treeNodeIsDescendantOf(treeNodes, 'root_0_0', 'root_0_0')).toEqual(false)
-    expect(treeNodeIsDescendantOf(treeNodes, 'root_0_0', 'root_0_1')).toEqual(false)
-    expect(treeNodeIsDescendantOf(treeNodes, 'root_0_0', 'root_0_1_0')).toEqual(false)
-    expect(treeNodeIsDescendantOf(treeNodes, 'root_0_0', 'root_1')).toEqual(false)
+    expect(model.isDescendantOf(treeNodes, 'root_0_0', 'root')).toEqual(true)
+    expect(model.isDescendantOf(treeNodes, 'root_0_0', 'root_0')).toEqual(true)
+    expect(model.isDescendantOf(treeNodes, 'root_0_0', 'root_0_0')).toEqual(
+      false
+    )
+    expect(model.isDescendantOf(treeNodes, 'root_0_0', 'root_0_1')).toEqual(
+      false
+    )
+    expect(model.isDescendantOf(treeNodes, 'root_0_0', 'root_0_1_0')).toEqual(
+      false
+    )
+    expect(model.isDescendantOf(treeNodes, 'root_0_0', 'root_1')).toEqual(false)
   })
 
   test('root_0_1', () => {
-    expect(treeNodeIsDescendantOf(treeNodes, 'root_0_1', 'root')).toEqual(true)
-    expect(treeNodeIsDescendantOf(treeNodes, 'root_0_1', 'root_0')).toEqual(true)
-    expect(treeNodeIsDescendantOf(treeNodes, 'root_0_1', 'root_0_0')).toEqual(false)
-    expect(treeNodeIsDescendantOf(treeNodes, 'root_0_1', 'root_0_1')).toEqual(false)
-    expect(treeNodeIsDescendantOf(treeNodes, 'root_0_1', 'root_0_1_0')).toEqual(false)
-    expect(treeNodeIsDescendantOf(treeNodes, 'root_0_1', 'root_1')).toEqual(false)
+    expect(model.isDescendantOf(treeNodes, 'root_0_1', 'root')).toEqual(true)
+    expect(model.isDescendantOf(treeNodes, 'root_0_1', 'root_0')).toEqual(true)
+    expect(model.isDescendantOf(treeNodes, 'root_0_1', 'root_0_0')).toEqual(
+      false
+    )
+    expect(model.isDescendantOf(treeNodes, 'root_0_1', 'root_0_1')).toEqual(
+      false
+    )
+    expect(model.isDescendantOf(treeNodes, 'root_0_1', 'root_0_1_0')).toEqual(
+      false
+    )
+    expect(model.isDescendantOf(treeNodes, 'root_0_1', 'root_1')).toEqual(false)
   })
 })
 
-describe('treeNodeChildNodeIds(nodesById, nodeId)', () => {
+describe('model.childIds(nodesById, nodeId)', () => {
   const treeNodes = makeTreeNodes([
     'root',
     'root_0',
     'root_0_0',
     'root_0_1',
     ['root_0_1_0', { someData: 'some-value' }],
-    'root_1'
+    'root_1',
   ])
 
   test('root', () => {
-    expect(treeNodeChildNodeIds(treeNodes, 'root'))
-      .toEqual(['root_0', 'root_1'])
+    expect(model.childIds(treeNodes, 'root')).toEqual(['root_0', 'root_1'])
   })
 
   test('branches: root_0', () => {
-    expect(treeNodeChildNodeIds(treeNodes, 'root_0'))
-      .toEqual(['root_0_0', 'root_0_1'])
-    expect(treeNodeChildNodeIds(treeNodes, 'root_0_1'))
-      .toEqual(['root_0_1_0'])
+    expect(model.childIds(treeNodes, 'root_0')).toEqual([
+      'root_0_0',
+      'root_0_1',
+    ])
+    expect(model.childIds(treeNodes, 'root_0_1')).toEqual(['root_0_1_0'])
   })
 
   test('leaves: root_1, root_0_1_0', () => {
-    expect(treeNodeChildNodeIds(treeNodes, 'root_1'))
-      .toEqual([])
+    expect(model.childIds(treeNodes, 'root_1')).toEqual([])
   })
 })
 
-describe('treeNodeSiblingIds(nodesById, nodeId)', () => {
+describe('model.siblingIds(nodesById, nodeId)', () => {
   const treeNodes = makeTreeNodes([
     'root',
     'root_0',
@@ -261,32 +264,42 @@ describe('treeNodeSiblingIds(nodesById, nodeId)', () => {
     ['root_0_1_0', { someData: 'some-value' }],
     'root_0_2',
     'root_0_3',
-    'root_1'
+    'root_1',
   ])
 
   test('root', () => {
-    expect(treeNodeSiblingIds(treeNodes, 'root'))
-      .toEqual([])
+    expect(model.siblingIds(treeNodes, 'root')).toEqual([])
   })
 
   test('single-sibling: root_0', () => {
-    expect(treeNodeSiblingIds(treeNodes, 'root_0'))
-      .toEqual(['root_1'])
+    expect(model.siblingIds(treeNodes, 'root_0')).toEqual(['root_1'])
   })
 
   test('multi-sibling: root_0_0, root_0_1, root_0_2, root_0_3', () => {
-    expect(treeNodeSiblingIds(treeNodes, 'root_0_0'))
-      .toEqual(['root_0_1', 'root_0_2', 'root_0_3'])
-    expect(treeNodeSiblingIds(treeNodes, 'root_0_1'))
-      .toEqual(['root_0_0', 'root_0_2', 'root_0_3'])
-    expect(treeNodeSiblingIds(treeNodes, 'root_0_2'))
-      .toEqual(['root_0_0', 'root_0_1', 'root_0_3'])
-    expect(treeNodeSiblingIds(treeNodes, 'root_0_3'))
-      .toEqual(['root_0_0', 'root_0_1', 'root_0_2'])
+    expect(model.siblingIds(treeNodes, 'root_0_0')).toEqual([
+      'root_0_1',
+      'root_0_2',
+      'root_0_3',
+    ])
+    expect(model.siblingIds(treeNodes, 'root_0_1')).toEqual([
+      'root_0_0',
+      'root_0_2',
+      'root_0_3',
+    ])
+    expect(model.siblingIds(treeNodes, 'root_0_2')).toEqual([
+      'root_0_0',
+      'root_0_1',
+      'root_0_3',
+    ])
+    expect(model.siblingIds(treeNodes, 'root_0_3')).toEqual([
+      'root_0_0',
+      'root_0_1',
+      'root_0_2',
+    ])
   })
 })
 
-describe('treeNodeIsSiblingOf(nodesById, nodeId, candidateSiblingId)', () => {
+describe('model.isSiblingOf(nodesById, nodeId, candidateSiblingId)', () => {
   const treeNodes = makeTreeNodes([
     'root',
     'root_0',
@@ -295,32 +308,32 @@ describe('treeNodeIsSiblingOf(nodesById, nodeId, candidateSiblingId)', () => {
     ['root_0_1_0', { someData: 'some-value' }],
     'root_0_2',
     'root_0_3',
-    'root_1'
+    'root_1',
   ])
 
   test('root', () => {
-    expect(treeNodeIsSiblingOf(treeNodes, 'root', 'root')).toEqual(false)
-    expect(treeNodeIsSiblingOf(treeNodes, 'root', 'root_0')).toEqual(false)
+    expect(model.isSiblingOf(treeNodes, 'root', 'root')).toEqual(false)
+    expect(model.isSiblingOf(treeNodes, 'root', 'root_0')).toEqual(false)
   })
 
   test('root_0', () => {
-    expect(treeNodeIsSiblingOf(treeNodes, 'root_0', 'root')).toEqual(false)
-    expect(treeNodeIsSiblingOf(treeNodes, 'root_0', 'root_0')).toEqual(false)
-    expect(treeNodeIsSiblingOf(treeNodes, 'root_0', 'root_1')).toEqual(true)
+    expect(model.isSiblingOf(treeNodes, 'root_0', 'root')).toEqual(false)
+    expect(model.isSiblingOf(treeNodes, 'root_0', 'root_0')).toEqual(false)
+    expect(model.isSiblingOf(treeNodes, 'root_0', 'root_1')).toEqual(true)
   })
 
   test('root_0_0', () => {
-    expect(treeNodeIsSiblingOf(treeNodes, 'root_0_0', 'root')).toEqual(false)
-    expect(treeNodeIsSiblingOf(treeNodes, 'root_0_0', 'root_0')).toEqual(false)
-    expect(treeNodeIsSiblingOf(treeNodes, 'root_0_0', 'root_1')).toEqual(false)
-    expect(treeNodeIsSiblingOf(treeNodes, 'root_0_0', 'root_0_0')).toEqual(false)
-    expect(treeNodeIsSiblingOf(treeNodes, 'root_0_0', 'root_0_1')).toEqual(true)
-    expect(treeNodeIsSiblingOf(treeNodes, 'root_0_0', 'root_0_2')).toEqual(true)
-    expect(treeNodeIsSiblingOf(treeNodes, 'root_0_0', 'root_0_3')).toEqual(true)
+    expect(model.isSiblingOf(treeNodes, 'root_0_0', 'root')).toEqual(false)
+    expect(model.isSiblingOf(treeNodes, 'root_0_0', 'root_0')).toEqual(false)
+    expect(model.isSiblingOf(treeNodes, 'root_0_0', 'root_1')).toEqual(false)
+    expect(model.isSiblingOf(treeNodes, 'root_0_0', 'root_0_0')).toEqual(false)
+    expect(model.isSiblingOf(treeNodes, 'root_0_0', 'root_0_1')).toEqual(true)
+    expect(model.isSiblingOf(treeNodes, 'root_0_0', 'root_0_2')).toEqual(true)
+    expect(model.isSiblingOf(treeNodes, 'root_0_0', 'root_0_3')).toEqual(true)
   })
 })
 
-describe('treeNodesCommonPath(nodesById, nodeIds)', () => {
+describe('model.commonPath(nodesById, nodeIds)', () => {
   const treeNodes = makeTreeNodes([
     'root',
     'root_0',
@@ -338,44 +351,29 @@ describe('treeNodesCommonPath(nodesById, nodeIds)', () => {
     'root_0_1_1_3_1',
     'root_0_2',
     'root_0_3',
-    'root_1'
+    'root_1',
   ])
 
   test('root - when root node is involved', () => {
-    expect(treeNodesCommonPath(treeNodes, [
-      'root_0_0',
-      'root',
-      'root_1'
-    ])).toEqual(['root'])
+    expect(model.commonPath(treeNodes, ['root_0_0', 'root', 'root_1'])).toEqual(
+      ['root']
+    )
   })
 
   test('root_0_1_1_3 and root_0_1_1_3_0_1 - One node is ancestor of the other', () => {
-    expect(treeNodesCommonPath(treeNodes, [
-      'root_0_1_1_3',
-      'root_0_1_1_3_0_1',
-    ])).toEqual([
-      'root',
-      'root_0',
-      'root_0_1',
-      'root_0_1_1',
-      'root_0_1_1_3',
-    ])
+    expect(
+      model.commonPath(treeNodes, ['root_0_1_1_3', 'root_0_1_1_3_0_1'])
+    ).toEqual(['root', 'root_0', 'root_0_1', 'root_0_1_1', 'root_0_1_1_3'])
   })
 
   test('root_0_1_1_3_1 and root_0_1_1_0 - different branches', () => {
-    expect(treeNodesCommonPath(treeNodes, [
-      'root_0_1_1_3_1',
-      'root_0_1_1_0',
-    ])).toEqual([
-      'root',
-      'root_0',
-      'root_0_1',
-      'root_0_1_1'
-    ])
+    expect(
+      model.commonPath(treeNodes, ['root_0_1_1_3_1', 'root_0_1_1_0'])
+    ).toEqual(['root', 'root_0', 'root_0_1', 'root_0_1_1'])
   })
 })
 
-describe('treeNodesCommonAncestorPath(nodesById, nodeIds)', () => {
+describe('model.commonAncestorPath(nodesById, nodeIds)', () => {
   const treeNodes = makeTreeNodes([
     'root',
     'root_0',
@@ -393,38 +391,24 @@ describe('treeNodesCommonAncestorPath(nodesById, nodeIds)', () => {
     'root_0_1_1_3_1',
     'root_0_2',
     'root_0_3',
-    'root_1'
+    'root_1',
   ])
 
   test('root - when root is involved', () => {
-    expect(treeNodesCommonAncestorPath(treeNodes, [
-      'root_0_0',
-      'root',
-      'root_1'
-    ])).toEqual(null)
+    expect(
+      model.commonAncestorPath(treeNodes, ['root_0_0', 'root', 'root_1'])
+    ).toEqual([])
   })
 
   test('root_0_1_1_3 and root_0_1_1_3_0_1 - One node is ancestor of the other', () => {
-    expect(treeNodesCommonAncestorPath(treeNodes, [
-      'root_0_1_1_3',
-      'root_0_1_1_3_0_1',
-    ])).toEqual([
-      'root',
-      'root_0',
-      'root_0_1',
-      'root_0_1_1'
-    ])
+    expect(
+      model.commonAncestorPath(treeNodes, ['root_0_1_1_3', 'root_0_1_1_3_0_1'])
+    ).toEqual(['root', 'root_0', 'root_0_1', 'root_0_1_1'])
   })
 
   test('root_0_1_1_3_1 and root_0_1_1_0 - different branches', () => {
-    expect(treeNodesCommonAncestorPath(treeNodes, [
-      'root_0_1_1_3_1',
-      'root_0_1_1_0',
-    ])).toEqual([
-      'root',
-      'root_0',
-      'root_0_1',
-      'root_0_1_1'
-    ])
+    expect(
+      model.commonAncestorPath(treeNodes, ['root_0_1_1_3_1', 'root_0_1_1_0'])
+    ).toEqual(['root', 'root_0', 'root_0_1', 'root_0_1_1'])
   })
 })

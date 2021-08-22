@@ -2,21 +2,6 @@
 
 exports[`public api 1`] = `
 Array [
-  "treeNodeIsRoot",
-  "treeRootNodeId",
-  "treeNodeAncestorIds",
-  "treeNodePath",
-  "treeNodeIsAncestorOf",
-  "treeNodeIsDescendantOf",
-  "treeNodeChildNodeIds",
-  "treeNodeSiblingIds",
-  "treeNodeIsSiblingOf",
-  "treeNodesCommonPath",
-  "treeNodesCommonAncestorPath",
-  "treeNodesById",
-  "treeNodeIdArray",
-  "treeNodeArray",
-  "treeNodeTree",
-  "treePathCommon",
+  "treeModel",
 ]
 `;

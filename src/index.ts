@@ -1,4 +1,2 @@
-export * from './traversal'
-export * from './structure'
-// export * from './memoization'
-export * from './path'
+export * from './types'
+export * from './treeModel'

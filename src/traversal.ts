@@ -1,122 +1,102 @@
-import {
-  NodesById,
-  Node,
-  treeNodeIdArray
-} from './structure'
+import type {
+  TreeModel,
+  FnIsRoot,
+  FnRootNodeId,
+  FnAncestorIds,
+  FnNodePath,
+  FnIsAncestorOf,
+  FnIsDescendantOf,
+  FnChildIds,
+  FnSiblingIds,
+  FnIsSiblingOf,
+  FnCommonPath,
+  FnCommonAncestorPath,
+} from './types'
 
-import {
-  treePathCommon
-} from './path'
+import * as util from './util'
 
-export const treeNodeIsRoot = (
-  nodesById:NodesById,
-  nodeId:string
-):boolean => (
-  nodesById[nodeId].parentId === null ||
-  nodesById[nodeId].parentId === undefined
-)
+export const isRoot =
+  (model: TreeModel): FnIsRoot =>
+  (nodesById, nodeId) =>
+    nodesById[nodeId].parentId === null
 
-export const treeRootNodeId = (
-  nodesById:NodesById,
-  memoNodeIdArray = treeNodeIdArray
-):(string | null) => (
-  memoNodeIdArray(nodesById)
-    .find(nodeId => treeNodeIsRoot(nodesById, nodeId)) || null
-)
+export const rootNodeId =
+  (model: TreeModel): FnRootNodeId =>
+  (nodesById) => {
+    const rootId = model
+      .nodeIdArray(nodesById)
+      .find((nodeId) => model.isRoot(nodesById, nodeId))
 
-export const treeNodeAncestorIds = (
-  nodesById:NodesById,
-  nodeId:string,
-  memoTreeNodeAncestorIds = treeNodeAncestorIds
-) => {
-  const node = nodesById[nodeId]
+    if (!rootId) {
+      throw new Error('No root node found')
+    }
 
-  return node.parentId
-    ? [
-        ...memoTreeNodeAncestorIds(nodesById, node.parentId),
-        node.parentId
-      ]
-    : []
-}
+    return rootId
+  }
 
-export const treeNodePath = (
-  nodesById:NodesById,
-  nodeId:string,
-  memoTreeNodeAncestorIds = treeNodeAncestorIds
-) => ([
-  ...memoTreeNodeAncestorIds(nodesById, nodeId),
-  nodeId
-])
+export const ancestorIds =
+  (model: TreeModel): FnAncestorIds =>
+  (nodesById, nodeId) => {
+    const node = nodesById[nodeId]
 
-export const treeNodeIsAncestorOf = (
-  nodesById:NodesById,
-  candidateAncestorId:string,
-  candidateDescendantId:string,
-  memoTreeNodeAncestorIds = treeNodeAncestorIds
-):boolean => (
-  memoTreeNodeAncestorIds(nodesById, candidateDescendantId)
-    .includes(candidateAncestorId)
-)
+    return node.parentId
+      ? [...model.ancestorIds(nodesById, node.parentId), node.parentId]
+      : []
+  }
 
-export const treeNodeIsDescendantOf = (
-  nodesById:NodesById,
-  candidateDescendantId:string,
-  candidateAncestorId:string,
-  memoTreeNodeAncestorIds = treeNodeAncestorIds
-):boolean => (
-  memoTreeNodeAncestorIds(nodesById, candidateDescendantId)
-    .includes(candidateAncestorId)
-)
+export const nodePath =
+  (model: TreeModel): FnNodePath =>
+  (nodesById, nodeId) =>
+    [...model.ancestorIds(nodesById, nodeId), nodeId]
 
-export const treeNodeChildNodeIds = (
-  nodesById:NodesById,
-  nodeId:string,
-  memoNodeIdArray = treeNodeIdArray
-) => (
-  memoNodeIdArray(nodesById)
-    .filter(otherNodeId => nodesById[otherNodeId].parentId === nodeId)
-)
+export const isAncestorOf =
+  (model: TreeModel): FnIsAncestorOf =>
+  (nodesById, candidateAncestorId, candidateDescendantId) =>
+    model
+      .ancestorIds(nodesById, candidateDescendantId)
+      .includes(candidateAncestorId)
 
-export const treeNodeSiblingIds = (
-  nodesById:NodesById,
-  nodeId:string,
-  memoNodeIdArray = treeNodeIdArray
-) => (
-  nodesById[nodeId].parentId
-    ? memoNodeIdArray(nodesById)
-        .filter(candidateSiblingId => treeNodeIsSiblingOf(
-          nodesById,
-          nodeId,
-          candidateSiblingId
-        ))
-    : []
-)
+export const isDescendantOf =
+  (model: TreeModel): FnIsDescendantOf =>
+  (nodesById, candidateDescendantId, candidateAncestorId) =>
+    model.isAncestorOf(nodesById, candidateAncestorId, candidateDescendantId)
 
-export const treeNodeIsSiblingOf = (
-  nodesById:NodesById,
-  nodeId:string,
-  otherNodeId:string,
-):boolean => (
-  nodeId !== otherNodeId &&
-  nodesById[nodeId].parentId === nodesById[otherNodeId].parentId
-)
+export const childIds =
+  (model: TreeModel): FnChildIds =>
+  (nodesById, nodeId) =>
+    model
+      .nodeIdArray(nodesById)
+      .filter((otherNodeId) => nodesById[otherNodeId].parentId === nodeId)
 
-export const treeNodesCommonPath = (
-  nodesById:NodesById,
-  nodeIds:string[],
-  memoTreeNodePath = treeNodePath
-) => treePathCommon(
-  nodeIds.map(nodeId => memoTreeNodePath(nodesById, nodeId))
-)
+export const siblingIds =
+  (model: TreeModel): FnSiblingIds =>
+  (nodesById, nodeId) =>
+    nodesById[nodeId].parentId
+      ? model
+          .nodeIdArray(nodesById)
+          .filter((candidateSiblingId) =>
+            model.isSiblingOf(nodesById, nodeId, candidateSiblingId)
+          )
+      : []
 
-export const treeNodesCommonAncestorPath = (
-  nodesById:NodesById,
-  nodeIds:string[],
-  memoTreeNodePath = treeNodePath
-) => (
-  nodeIds.some(nodeId => treeNodeIsRoot(nodesById, nodeId))
-    ? null
-    : treePathCommon(
-        nodeIds.map(nodeId => memoTreeNodePath(nodesById, nodesById[nodeId].parentId as string))
-      )
-)
+export const isSiblingOf =
+  (model: TreeModel): FnIsSiblingOf =>
+  (nodesById, nodeId, otherNodeId) =>
+    nodeId !== otherNodeId &&
+    nodesById[nodeId].parentId === nodesById[otherNodeId].parentId
+
+export const commonPath =
+  (model: TreeModel): FnCommonPath =>
+  (nodesById, nodeIds) =>
+    util.commonPath(nodeIds.map((nodeId) => model.nodePath(nodesById, nodeId)))
+
+export const commonAncestorPath =
+  (model: TreeModel): FnCommonAncestorPath =>
+  (nodesById, nodeIds) =>
+    nodeIds.some((nodeId) => model.isRoot(nodesById, nodeId))
+      ? []
+      : util.commonPath(
+          nodeIds.map((nodeId) =>
+            model.nodePath(nodesById, nodesById[nodeId].parentId as string)
+          )
+        )
