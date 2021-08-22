@@ -61,6 +61,8 @@ export type TreeModel = {
   isAncestorOf: FnIsAncestorOf
   isDescendantOf: FnIsDescendantOf
   childIds: FnChildIds
+  isChildOf: FnIsChildOf
+  isParentOf: FnIsParentOf
   siblingIds: FnSiblingIds
   isSiblingOf: FnIsSiblingOf
   commonPath: FnCommonPath
@@ -94,6 +96,16 @@ export type FnIsDescendantOf = (
   candidateAncestorId: NodeId
 ) => boolean
 export type FnChildIds = (state: TreeState, nodeId: NodeId) => NodeId[]
+export type FnIsChildOf = (
+  state: TreeState,
+  nodeId: NodeId,
+  candidateParentId: NodeId
+) => boolean
+export type FnIsParentOf = (
+  state: TreeState,
+  nodeId: NodeId,
+  candidateChildId: NodeId
+) => boolean
 export type FnSiblingIds = (state: TreeState, nodeId: NodeId) => NodeId[]
 export type FnIsSiblingOf = (
   state: TreeState,

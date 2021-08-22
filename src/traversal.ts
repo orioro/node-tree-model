@@ -7,6 +7,8 @@ import type {
   FnIsAncestorOf,
   FnIsDescendantOf,
   FnChildIds,
+  FnIsChildOf,
+  FnIsParentOf,
   FnSiblingIds,
   FnIsSiblingOf,
   FnCommonPath,
@@ -110,6 +112,28 @@ export const childIds: QueryProvider<FnChildIds> =
     model
       .nodeIdArray(nodesById)
       .filter((otherNodeId) => nodesById[otherNodeId].parentId === nodeId)
+
+/**
+ * @function tree#isChildOf
+ * @param {TreeState} nodesById
+ * @param {NodeId} nodeId
+ * @param {NodeId} candidateParentNodeId
+ * @returns {Boolean}
+ */
+export const isChildOf: QueryProvider<FnIsChildOf> =
+  () => (nodesById, nodeId, candidateParentNodeId) =>
+    nodesById[nodeId].parentId === candidateParentNodeId
+
+/**
+ * @function tree#isChildOf
+ * @param {TreeState} nodesById
+ * @param {NodeId} nodeId
+ * @param {NodeId} candidateChildNodeId
+ * @returns {Boolean}
+ */
+export const isParentOf: QueryProvider<FnIsParentOf> =
+  (model) => (nodesById, nodeId, candidateChildNodeId) =>
+    model.isChildOf(nodesById, candidateChildNodeId, nodeId)
 
 /**
  * @function tree#siblingIds

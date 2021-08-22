@@ -255,6 +255,35 @@ describe('model.childIds(nodesById, nodeId)', () => {
   })
 })
 
+test('model.isChildOf(nodesById, nodeId, candidateParentId)', () => {
+  const treeNodes = makeTreeNodes([
+    'root',
+    'root_0',
+    'root_0_0',
+    'root_0_1',
+    ['root_0_1_0', { someData: 'some-value' }],
+    'root_1',
+  ])
+
+  expect(model.isChildOf(treeNodes, 'root_0', 'root')).toEqual(true)
+  expect(model.isChildOf(treeNodes, 'root_0_0', 'root')).toEqual(false)
+})
+
+test('model.isParentOf(nodesById, nodeId, candidateChildId)', () => {
+  const treeNodes = makeTreeNodes([
+    'root',
+    'root_0',
+    'root_0_0',
+    'root_0_1',
+    ['root_0_1_0', { someData: 'some-value' }],
+    'root_1',
+  ])
+
+  expect(model.isParentOf(treeNodes, 'root_0', 'root_0_0')).toEqual(true)
+  expect(model.isParentOf(treeNodes, 'root_0', 'root_0_1')).toEqual(true)
+  expect(model.isParentOf(treeNodes, 'root_0', 'root_1')).toEqual(false)
+})
+
 describe('model.siblingIds(nodesById, nodeId)', () => {
   const treeNodes = makeTreeNodes([
     'root',
