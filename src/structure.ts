@@ -11,7 +11,7 @@ export type NodeArray = Node[]
 export type NodeIdArray = string[]
 
 /**
- * @function tree#nodeIdArray
+ * @function tree.nodeIdArray
  * @param {TreeState} nodesById
  * @returns {NodeId[]}
  */
@@ -19,7 +19,7 @@ export const nodeIdArray: QueryProvider<FnNodeIdArray> = () => (nodesById) =>
   Object.keys(nodesById)
 
 /**
- * @function tree#nodeArray
+ * @function tree.nodeArray
  * @param {TreeState} nodesById
  * @returns {Node[]}
  */
@@ -27,7 +27,7 @@ export const nodeArray: QueryProvider<FnNodeArray> = (model) => (nodesById) =>
   model.nodeIdArray(nodesById).map((nodeId) => nodesById[nodeId])
 
 /**
- * @function tree#nodeTree
+ * @function tree.nodeTree
  * @param {TreeState} nodesById
  * @param {NodeId} nodeId
  * @returns {NodeTree}

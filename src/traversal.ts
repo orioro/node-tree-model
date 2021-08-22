@@ -21,7 +21,7 @@ import * as util from './util'
 /**
  * Returns whether the given node is the root node (parentId === null)
  *
- * @function tree#isRoot
+ * @function tree.isRoot
  * @param {TreeState} nodesById
  * @param {NodeId} nodeId
  * @returns {Boolean}
@@ -30,7 +30,7 @@ export const isRoot: QueryProvider<FnIsRoot> = () => (nodesById, nodeId) =>
   nodesById[nodeId].parentId === null
 
 /**
- * @function tree#rootNodeId
+ * @function tree.rootNodeId
  * @param {TreeState} nodesById
  * @returns {NodeId}
  */
@@ -51,7 +51,7 @@ export const rootNodeId: QueryProvider<FnRootNodeId> =
  * Retrieves the list of node ancestors by walking up the tree
  * using `node.parentId`
  *
- * @function tree#ancestorIds
+ * @function tree.ancestorIds
  * @param {TreeState} nodesById
  * @param {NodeId} nodeId
  * @returns {NodeId[]}
@@ -69,7 +69,7 @@ export const ancestorIds: QueryProvider<FnAncestorIds> =
  * Returns the full path up to the node. A node path is
  * an array of nodeIds in sequence.
  *
- * @function tree#nodePath
+ * @function tree.nodePath
  * @param {TreeState} nodesById
  * @param {NodeId} nodeId
  * @returns {NodePath}
@@ -79,7 +79,7 @@ export const nodePath: QueryProvider<FnNodePath> =
     [...model.ancestorIds(nodesById, nodeId), nodeId]
 
 /**
- * @function tree#isAncestorOf
+ * @function tree.isAncestorOf
  * @param {TreeState} nodesById
  * @param {NodeId} candidateAncestorId
  * @param {NodeId} candidateDescendantId
@@ -92,7 +92,7 @@ export const isAncestorOf: QueryProvider<FnIsAncestorOf> =
       .includes(candidateAncestorId)
 
 /**
- * @function tree#isDescendantOf
+ * @function tree.isDescendantOf
  * @param {TreeState} nodesById
  * @param {NodeId} candidateDescendantId
  * @param {NodeId} candidateAncestorId
@@ -103,7 +103,7 @@ export const isDescendantOf: QueryProvider<FnIsDescendantOf> =
     model.isAncestorOf(nodesById, candidateAncestorId, candidateDescendantId)
 
 /**
- * @function tree#childIds
+ * @function tree.childIds
  * @param {TreeState} nodesById
  * @param {NodeId} nodeId
  * @returns {NodeId[]}
@@ -115,7 +115,7 @@ export const childIds: QueryProvider<FnChildIds> =
       .filter((otherNodeId) => nodesById[otherNodeId].parentId === nodeId)
 
 /**
- * @function tree#isChildOf
+ * @function tree.isChildOf
  * @param {TreeState} nodesById
  * @param {NodeId} nodeId
  * @param {NodeId} candidateParentNodeId
@@ -126,7 +126,7 @@ export const isChildOf: QueryProvider<FnIsChildOf> =
     nodesById[nodeId].parentId === candidateParentNodeId
 
 /**
- * @function tree#isChildOf
+ * @function tree.isChildOf
  * @param {TreeState} nodesById
  * @param {NodeId} nodeId
  * @param {NodeId} candidateChildNodeId
@@ -137,7 +137,7 @@ export const isParentOf: QueryProvider<FnIsParentOf> =
     model.isChildOf(nodesById, candidateChildNodeId, nodeId)
 
 /**
- * @function tree#siblingIds
+ * @function tree.siblingIds
  * @param {TreeState} nodesById
  * @param {NodeId} nodeId
  * @returns {NodeId[]}
@@ -153,7 +153,7 @@ export const siblingIds: QueryProvider<FnSiblingIds> =
       : []
 
 /**
- * @function tree#isSiblingOf
+ * @function tree.isSiblingOf
  * @param {TreeState} nodesById
  * @param {NodeId} nodeId
  * @param {NodeId} otherNodeId
@@ -165,7 +165,7 @@ export const isSiblingOf: QueryProvider<FnIsSiblingOf> =
     nodesById[nodeId].parentId === nodesById[otherNodeId].parentId
 
 /**
- * @function tree#commonPath
+ * @function tree.commonPath
  * @param {TreeState} nodesById
  * @param {NodeId[]} nodeIds
  * @returns {NodePath}
@@ -175,7 +175,7 @@ export const commonPath: QueryProvider<FnCommonPath> =
     util.commonPath(nodeIds.map((nodeId) => model.nodePath(nodesById, nodeId)))
 
 /**
- * @function tree#commonAncestorPath
+ * @function tree.commonAncestorPath
  * @param {TreeState} nodesById
  * @param {NodeId[]} nodeIds
  * @returns {NodePath}
@@ -190,7 +190,7 @@ export const commonAncestorPath: QueryProvider<FnCommonAncestorPath> =
           )
         )
 /**
- * @function tree#commonAncestorId
+ * @function tree.commonAncestorId
  * @param {TreeState} nodesById
  * @param {NodeId[]} nodeIds
  * @returns {NodeId | null}
