@@ -1,17 +1,49 @@
+/**
+ * String
+ *
+ * @typedef {String} NodeId
+ */
 export type NodeId = string
 
+/**
+ * A sequence of nodeIds that lead to the last node
+ *
+ * @typedef {NodeId[]} NodePath
+ */
 export type NodePath = NodeId[]
 
+/**
+ * ```
+ * {
+ *   id: NodeId
+ *   parentId: NodeId | null
+ *   [key: string]: any
+ * }
+ * ```
+ *
+ * @typedef {Object} Node
+ */
 export type Node = {
   id: NodeId
   parentId: NodeId | null
   [key: string]: any
 }
 
+/**
+ * Index of all nodes that compose the tree indexed by id:
+ * `{ [key: string]: Node }`
+ *
+ * @typedef {Object} TreeState
+ */
 export type TreeState = {
   [key: string]: Node
 }
 
+/**
+ * Tree representation of the node
+ * `[Node, NodeTree[] | null]`
+ * @typedef NodeTree
+ */
 export type NodeTree = [Node, NodeTree[] | null]
 
 type TreeModelQueryFn = (state: TreeState, ...args: any[]) => any
