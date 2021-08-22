@@ -1,15 +1,16 @@
+/* eslint-disable jest/expect-expect */
+
 import { performance } from 'perf_hooks'
 import { table } from 'table'
-import { makeTreeNodes, TREE_1 } from '../test/trees'
-import { callCounter } from '../test/util'
+import { makeTreeNodes } from '../test/trees'
 
 import * as treeStructure from './structure'
 import * as treeTraversal from './traversal'
 
 import { treeModel } from './treeModel'
-import { TreeModel } from './types'
+import { TreeModel, TreeState } from './types'
 
-const _nonMemoTreeModel = () => {
+const _nonMemoTreeModel = (): TreeModel => {
   const model = {}
 
   const queries = {
@@ -28,13 +29,15 @@ const _nonMemoTreeModel = () => {
     )
   )
 
-  return model
+  return model as TreeModel
 }
 
 const MEMO = treeModel()
-const NON_MEMO = _nonMemoTreeModel()
+const NON_MEMO: TreeModel = _nonMemoTreeModel()
 
-const runNTimes = (fn, n) => {
+type AnyFn = (...args: any[]) => any
+
+const runNTimes = (fn: AnyFn, n: number) => {
   while (n > 0) {
     fn()
 
@@ -42,7 +45,7 @@ const runNTimes = (fn, n) => {
   }
 }
 
-const naiveBenchmark = (fn, runs = 10000) => {
+const naiveBenchmark = (fn: AnyFn, runs: number = 10000) => {
   const start = performance.now()
 
   const result = fn()
@@ -152,24 +155,30 @@ const TEST_NODES = makeTreeNodes([
   'root_5_0_0_0',
 ])
 
-const RESULTS = []
+type Result = [string, number | null, number, number]
+
+const RESULTS: Result[] = []
 
 type MemoCompareOpts = {
+  id: string
   timeRatio?: number | null
-  id?: string | null
   pre?: (() => any) | null
   runs?: number
 }
 
 const _memoCompare = (
-  fn,
-  args,
-  { timeRatio = null, id = null, pre = null, runs = 1000 }: MemoCompareOpts = {}
+  fn: string | [AnyFn, AnyFn],
+  args: any[],
+  { id, timeRatio = null, pre = null, runs = 1000 }: MemoCompareOpts
 ) => {
   const memoFn = typeof fn === 'string' ? MEMO[fn] : fn[0]
   const nonMemoFn = typeof fn === 'string' ? NON_MEMO[fn] : fn[1]
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const runMemoFn = () => memoFn(...args)
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const runNonMemoFn = () => nonMemoFn(...args)
 
   pre =
@@ -255,7 +264,7 @@ describe('treeMemo(selectors)', () => {
   })
 
   describe('rootNodeId', () => {
-    test('', () => {
+    test('rootNodeId', () => {
       _memoCompare('rootNodeId', [TEST_NODES], {
         id: 'rootNodeId(TEST_NODES)',
         timeRatio: 1,
@@ -264,7 +273,7 @@ describe('treeMemo(selectors)', () => {
   })
 
   describe('ancestorIds', () => {
-    test('', () => {
+    test('ancestorIds', () => {
       _memoCompare('ancestorIds', [TEST_NODES, 'root_0_0_1_2_0_1_0_0_0_1_0'], {
         id: 'ancestorIds(TEST_NODES, "root_0_0_1_2_0_1_0_0_0_1_0")',
         timeRatio: 0.3,
@@ -273,7 +282,7 @@ describe('treeMemo(selectors)', () => {
   })
 
   describe('nodePath', () => {
-    test('', () => {
+    test('nodePath', () => {
       _memoCompare('nodePath', [TEST_NODES, 'root_0_0_1_2_0_1_0_0_0_1_0'], {
         id: 'nodePath(TEST_NODES, "root_0_0_1_2_0_1_0_0_0_1_0")',
         timeRatio: 0.3,
@@ -282,7 +291,7 @@ describe('treeMemo(selectors)', () => {
   })
 
   describe('isAncestorOf', () => {
-    test('', () => {
+    test('isAncestorOf', () => {
       _memoCompare(
         'isAncestorOf',
         [TEST_NODES, 'root_0', 'root_0_0_1_2_0_1_0_0_0_1_0'],
@@ -295,7 +304,7 @@ describe('treeMemo(selectors)', () => {
   })
 
   describe('isDescendantOf', () => {
-    test('', () => {
+    test('isDescendantOf', () => {
       _memoCompare(
         'isDescendantOf',
         [TEST_NODES, 'root_0_0_1_2_0_1_0_0_0_1_0', 'root_0'],
@@ -308,7 +317,7 @@ describe('treeMemo(selectors)', () => {
   })
 
   describe('childIds', () => {
-    test('', () => {
+    test('childIds', () => {
       _memoCompare('childIds', [TEST_NODES, 'root'], {
         id: 'childIds(TEST_NODES, "root")',
         timeRatio: 0.5,
@@ -317,7 +326,7 @@ describe('treeMemo(selectors)', () => {
   })
 
   describe('siblingIds', () => {
-    test('', () => {
+    test('siblingIds', () => {
       _memoCompare('siblingIds', [TEST_NODES, 'root_1'], {
         id: 'siblingIds(TEST_NODES, "root_1")',
         timeRatio: 0.5,
@@ -326,7 +335,7 @@ describe('treeMemo(selectors)', () => {
   })
 
   describe('isSiblingOf', () => {
-    test('', () => {
+    test('isSiblingOf', () => {
       _memoCompare('isSiblingOf', [TEST_NODES, 'root_1', 'root_2'], {
         id: 'isSiblingOf(TEST_NODES, "root_1", "root_2")',
       })
@@ -334,12 +343,12 @@ describe('treeMemo(selectors)', () => {
   })
 
   describe('custom fn', () => {
-    test('', () => {
-      const customQuery1 = (nodesById, nodeId) =>
+    test('custom fn', () => {
+      const customQuery1 = (nodesById: TreeState, nodeId: string) =>
         NON_MEMO.ancestorIds(nodesById, nodeId).reverse()
 
       const { memoCustomQuery } = treeModel({
-        memoCustomQuery: (model) => (nodesById, nodeId) =>
+        memoCustomQuery: () => (nodesById: TreeState, nodeId: string) =>
           customQuery1(nodesById, nodeId),
       })
 

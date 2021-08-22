@@ -1,7 +1,6 @@
 import type {
-  TreeModel,
   Node,
-  FnFromNodeArray,
+  QueryProvider,
   FnNodeIdArray,
   FnNodeArray,
   FnNodeTree,
@@ -11,19 +10,14 @@ export type NodeArray = Node[]
 
 export type NodeIdArray = string[]
 
-export const nodeIdArray =
-  (model: TreeModel): FnNodeIdArray =>
-  (nodesById) =>
-    Object.keys(nodesById)
+export const nodeIdArray: QueryProvider<FnNodeIdArray> = () => (nodesById) =>
+  Object.keys(nodesById)
 
-export const nodeArray =
-  (model: TreeModel): FnNodeArray =>
-  (nodesById) =>
-    model.nodeIdArray(nodesById).map((nodeId) => nodesById[nodeId])
+export const nodeArray: QueryProvider<FnNodeArray> = (model) => (nodesById) =>
+  model.nodeIdArray(nodesById).map((nodeId) => nodesById[nodeId])
 
-export const nodeTree =
-  (model: TreeModel): FnNodeTree =>
-  (nodesById, nodeId) => {
+export const nodeTree: QueryProvider<FnNodeTree> =
+  (model) => (nodesById, nodeId) => {
     const node = nodesById[nodeId]
 
     const childNodeTrees = model

@@ -1,5 +1,5 @@
 import type {
-  TreeModel,
+  QueryProvider,
   FnIsRoot,
   FnRootNodeId,
   FnAncestorIds,
@@ -15,14 +15,11 @@ import type {
 
 import * as util from './util'
 
-export const isRoot =
-  (model: TreeModel): FnIsRoot =>
-  (nodesById, nodeId) =>
-    nodesById[nodeId].parentId === null
+export const isRoot: QueryProvider<FnIsRoot> = () => (nodesById, nodeId) =>
+  nodesById[nodeId].parentId === null
 
-export const rootNodeId =
-  (model: TreeModel): FnRootNodeId =>
-  (nodesById) => {
+export const rootNodeId: QueryProvider<FnRootNodeId> =
+  (model) => (nodesById) => {
     const rootId = model
       .nodeIdArray(nodesById)
       .find((nodeId) => model.isRoot(nodesById, nodeId))
@@ -34,9 +31,8 @@ export const rootNodeId =
     return rootId
   }
 
-export const ancestorIds =
-  (model: TreeModel): FnAncestorIds =>
-  (nodesById, nodeId) => {
+export const ancestorIds: QueryProvider<FnAncestorIds> =
+  (model) => (nodesById, nodeId) => {
     const node = nodesById[nodeId]
 
     return node.parentId
@@ -44,33 +40,28 @@ export const ancestorIds =
       : []
   }
 
-export const nodePath =
-  (model: TreeModel): FnNodePath =>
-  (nodesById, nodeId) =>
+export const nodePath: QueryProvider<FnNodePath> =
+  (model) => (nodesById, nodeId) =>
     [...model.ancestorIds(nodesById, nodeId), nodeId]
 
-export const isAncestorOf =
-  (model: TreeModel): FnIsAncestorOf =>
-  (nodesById, candidateAncestorId, candidateDescendantId) =>
+export const isAncestorOf: QueryProvider<FnIsAncestorOf> =
+  (model) => (nodesById, candidateAncestorId, candidateDescendantId) =>
     model
       .ancestorIds(nodesById, candidateDescendantId)
       .includes(candidateAncestorId)
 
-export const isDescendantOf =
-  (model: TreeModel): FnIsDescendantOf =>
-  (nodesById, candidateDescendantId, candidateAncestorId) =>
+export const isDescendantOf: QueryProvider<FnIsDescendantOf> =
+  (model) => (nodesById, candidateDescendantId, candidateAncestorId) =>
     model.isAncestorOf(nodesById, candidateAncestorId, candidateDescendantId)
 
-export const childIds =
-  (model: TreeModel): FnChildIds =>
-  (nodesById, nodeId) =>
+export const childIds: QueryProvider<FnChildIds> =
+  (model) => (nodesById, nodeId) =>
     model
       .nodeIdArray(nodesById)
       .filter((otherNodeId) => nodesById[otherNodeId].parentId === nodeId)
 
-export const siblingIds =
-  (model: TreeModel): FnSiblingIds =>
-  (nodesById, nodeId) =>
+export const siblingIds: QueryProvider<FnSiblingIds> =
+  (model) => (nodesById, nodeId) =>
     nodesById[nodeId].parentId
       ? model
           .nodeIdArray(nodesById)
@@ -79,20 +70,17 @@ export const siblingIds =
           )
       : []
 
-export const isSiblingOf =
-  (model: TreeModel): FnIsSiblingOf =>
-  (nodesById, nodeId, otherNodeId) =>
+export const isSiblingOf: QueryProvider<FnIsSiblingOf> =
+  () => (nodesById, nodeId, otherNodeId) =>
     nodeId !== otherNodeId &&
     nodesById[nodeId].parentId === nodesById[otherNodeId].parentId
 
-export const commonPath =
-  (model: TreeModel): FnCommonPath =>
-  (nodesById, nodeIds) =>
+export const commonPath: QueryProvider<FnCommonPath> =
+  (model) => (nodesById, nodeIds) =>
     util.commonPath(nodeIds.map((nodeId) => model.nodePath(nodesById, nodeId)))
 
-export const commonAncestorPath =
-  (model: TreeModel): FnCommonAncestorPath =>
-  (nodesById, nodeIds) =>
+export const commonAncestorPath: QueryProvider<FnCommonAncestorPath> =
+  (model) => (nodesById, nodeIds) =>
     nodeIds.some((nodeId) => model.isRoot(nodesById, nodeId))
       ? []
       : util.commonPath(

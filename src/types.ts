@@ -14,8 +14,9 @@ export type TreeState = {
 
 export type NodeTree = [Node, NodeTree[] | null]
 
+type TreeModelQueryFn = (state: TreeState, ...args: any[]) => any
+
 export type TreeModel = {
-  // fromNodeArray: FnFromNodeArray
   nodeIdArray: FnNodeIdArray
   nodeArray: FnNodeArray
   nodeIsRoot: FnIsRoot
@@ -32,9 +33,14 @@ export type TreeModel = {
   isSiblingOf: FnIsSiblingOf
   commonPath: FnCommonPath
   commonAncestorPath: FnCommonAncestorPath
+
+  [key: string]: TreeModelQueryFn
 }
 
-export type FnTreeModelGeneric = (state: TreeState, ...args: any[]) => any
+export type QueryProvider<T> = (model: TreeModel) => T
+export type QueryProviderList = {
+  [key: string]: QueryProvider<TreeModelQueryFn>
+}
 
 export type FnFromNodeArray = (nodeArray: Node[]) => TreeState
 export type FnNodeIdArray = (state: TreeState) => NodeId[]

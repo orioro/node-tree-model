@@ -1,12 +1,14 @@
+type Cache = Map<any, any>
+
 /**
  * Simplified version of memoizeOne for memoizing
  * functions that take only 1 single argument
  */
 const stateCache = () => {
-  let storedState
-  let cache
+  let storedState: any
+  let cache: Cache
 
-  const getStateCache = (state: any) => {
+  const getStateCache = (state: any): Cache => {
     if (state === storedState) {
       return cache
     } else {
@@ -34,7 +36,7 @@ export const memoizeStateQuery = (
 ): StateQueryFn => {
   const getCache = stateCache()
 
-  const memoized = (state, ...args) => {
+  const memoized = (state: any, ...args: any[]) => {
     const cache = getCache(state)
     const cacheKey = keyResolver(...args)
 

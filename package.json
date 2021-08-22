@@ -12,7 +12,8 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "scripts": {
-    "test": "jest --collectCoverage",
+    "test": "jest --collectCoverage --testPathIgnorePatterns=memoization.spec.ts",
+    "test-all": "jest",
     "dev": "jest --watch",
     "build": "rm -rf dist && rollup --config ./rollup/build.config.js && yarn tsc:declaration",
     "prepare": "npm run build && npm run readme",

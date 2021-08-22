@@ -1,26 +1,28 @@
-import { TreeModel } from './types'
+import { TreeModel, QueryProviderList } from './types'
 import { memoizeStateQuery } from './memoizeStateQuery'
 
 import * as structure from './structure'
 import * as traversal from './traversal'
 
-const BUILT_IN_QUERIES = {
+const BUILT_IN_QUERY_PROVIDERS = {
   ...structure,
   ...traversal,
 }
 
-export const treeModel = (customQueries = {}) => {
-  const queries = {
-    ...BUILT_IN_QUERIES,
-    ...customQueries,
+export const treeModel = (
+  customQueryProviders: QueryProviderList = {}
+): TreeModel => {
+  const queryProviders = {
+    ...BUILT_IN_QUERY_PROVIDERS,
+    ...customQueryProviders,
   }
 
   const model: TreeModel = {} as TreeModel
 
   Object.assign(
     model,
-    Object.keys(queries).reduce((acc, queryId) => {
-      const query = queries[queryId](model)
+    Object.keys(queryProviders).reduce((acc, queryId) => {
+      const query = queryProviders[queryId](model)
 
       return {
         ...acc,
