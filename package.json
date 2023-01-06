@@ -19,7 +19,7 @@
     "prepare": "npm run build && npm run readme",
     "readme": "readme",
     "update-dependencies": "npx npm-check-updates -u",
-    "tsc:declaration": "tsc --declaration --emitDeclarationOnly --declarationDir dist",
+    "tsc:declaration": "tsc --declaration --emitDeclarationOnly --declarationDir dist --rootDir src",
     "tsc:validate": "tsc --noEmit",
     "commit": "cz",
     "lint:eslint": "eslint src",
